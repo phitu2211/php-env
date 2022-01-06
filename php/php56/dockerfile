@@ -1,4 +1,4 @@
-FROM php:7.4-fpm-alpine
+FROM php:5.6-fpm-alpine
 
 WORKDIR /app
 
@@ -15,7 +15,7 @@ RUN apk --no-cache --update add curl nano \
 RUN rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 
 # Install extensions
-RUN docker-php-ext-install gd pdo_mysql mysqli mbstring zip exif pcntl
+RUN docker-php-ext-install gd pdo_mysql mysqli zip exif pcntl
 
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer

@@ -1,4 +1,4 @@
-version: "3.7"
+version: '3.7'
 
 services:
   # Nginx Service Container
@@ -10,21 +10,100 @@ services:
     ports:
       - 80:80
     volumes:
-      - ./app/:/app
+      - ../code/:/app
       - ./nginx/:/etc/nginx/conf.d/
     networks:
-      - app-network
+      app-network:
+        ipv4_address: 10.1.0.100
 
-  # PHP (fpm) app container
-  php:
-    build: ./php/
-    container_name: applications
+  # PHP 80
+  php80:
+    build: ./php/php80
+    container_name: php80
     restart: unless-stopped
     tty: true
     volumes:
-      - ./app/:/app
+      - ../code/:/app
     networks:
       - app-network
+    extra_hosts:
+      - 'product.local:10.1.0.100'
+      - 'scoring.local:10.1.0.100'
+      - 'p2p.local:10.1.0.100'
+
+  # PHP 74
+  php74:
+    build: ./php/php74
+    container_name: php74
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - ../code/:/app
+    networks:
+      - app-network
+    extra_hosts:
+      - 'product.local:10.1.0.100'
+      - 'scoring.local:10.1.0.100'
+      - 'p2p.local:10.1.0.100'
+
+  # PHP 73
+  php73:
+    build: ./php/php73
+    container_name: php73
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - ../code/:/app
+    networks:
+      - app-network
+    extra_hosts:
+      - 'product.local:10.1.0.100'
+      - 'scoring.local:10.1.0.100'
+      - 'p2p.local:10.1.0.100'
+
+  # PHP 72
+  php72:
+    build: ./php/php72
+    container_name: php72
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - ../code/:/app
+    networks:
+      - app-network
+    extra_hosts:
+      - 'product.local:10.1.0.100'
+      - 'scoring.local:10.1.0.100'
+      - 'p2p.local:10.1.0.100'
+
+  # PHP 70
+  php70:
+    build: ./php/php70
+    container_name: php70
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - ../code/:/app
+    networks:
+      - app-network
+    extra_hosts:
+      - 'product.local:10.1.0.100'
+      - 'scoring.local:10.1.0.100'
+      - 'p2p.local:10.1.0.100'
+
+  # PHP 56
+  php56:
+    build: ./php/php56
+    container_name: php56
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - ../code/:/app
+    networks:
+      - app-network
+    extra_hosts:
+      - 'product.local:10.1.0.100'
+      - 'scoring.local:10.1.0.100'
 
   # Mysql data container
   data:
@@ -40,6 +119,19 @@ services:
     networks:
       - app-network
 
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    ports:
+      - 8000:80
+    environment:
+      - PMA_ARBITRARY=1
+      - MAX_EXECUTION_TIME=10000
 networks:
   app-network:
     driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.1.0.0/24

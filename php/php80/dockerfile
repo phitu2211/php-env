@@ -1,0 +1,48 @@
+FROM php:8.0-fpm-alpine
+
+WORKDIR /app
+
+# Install dependencies
+RUN apk --no-cache --update add curl nano \
+    libpng-dev \
+    freetype \
+    libpng \
+    libjpeg-turbo \
+    freetype-dev \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    libzip-dev \
+    zlib-dev \
+    unzip \
+    zip \
+    git \
+    bash \
+    nodejs \
+    npm
+
+# Clear cache
+RUN rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
+
+# Install extensions
+RUN docker-php-ext-install pdo_mysql mysqli zip exif pcntl \
+    && docker-php-ext-configure gd --with-jpeg --with-freetype \
+    && docker-php-ext-install gd 
+    
+RUN apk del --no-cache freetype-dev libpng-dev libjpeg-turbo-dev
+# Install composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Add user for applications
+RUN addgroup -S www && adduser -S www -G www
+
+# RUN npm install -g n && n 12.14.1
+
+# # Copy existing application directory permissions
+COPY --chown=www:www . /app
+# USER root
+# # Change current user to www
+USER www
+
+# Expose port 9000 and start php-fpm server
+EXPOSE 9000
+CMD ["php-fpm"]
